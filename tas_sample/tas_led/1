@@ -1,0 +1,57 @@
+var net = require('net');
+var util = require('util');
+var fs = require('fs');
+var xml2js = require('xml2js');
+var exec = require("child_process").exec;
+var wdt = require('./wdt');
+var useparentport = '';
+var useparenthostname = '';
+var upload_arr = [];
+var download_arr = [];
+var conf = {};
+
+
+
+fs.readFile('conf.xml', 'utf-8', function (err, data) {
+		if (err) {
+		console.log("FATAL An error occurred trying to read in the file: " + err);
+		console.log("error : set to default for configuration")
+		}
+		else {
+		var parser = new xml2js.Parser({explicitArray: false});
+		parser.parseString(data, function (err, result) {
+				if (err) {
+				console.log("Parsing An error occurred trying to read in the file: " + err);
+				console.log("error : set to default for configuration")
+				}
+				else {
+				var jsonString = JSON.stringify(result);
+				conf = JSON.parse(jsonString)['m2m:conf'];
+
+				useparenthostname = conf.tas.parenthostname;
+				useparentport = conf.tas.parentport;
+
+				if(conf.upload != null) {
+				if (conf.upload['ctname'] != null) {
+				upload_arr[0] = conf.upload;
+				}
+				else {
+				upload_arr = conf.upload;
+				}
+				}
+
+				if(conf.download != null) {
+					if (conf.download['ctname'] != null) {
+						download_arr[0] = conf.download;
+					}
+					else {
+						download_arr = conf.download;
+					}
+				}
+				}
+		});
+		}
+});
+
+
+s
